@@ -32,9 +32,10 @@ namespace DigitalCloudTechnologies.Services
 
 		}
 
-		public Task<IEnumerable<CryptoRates>> GetAllRatesAsync()
+		public async Task<IEnumerable<Rate>> GetAllRatesAsync()
 		{
-			throw new NotImplementedException();
+			CryptoRates data = await httpClient.GetFromJsonAsync<CryptoRates>(@"https://api.coincap.io/v2/rates");
+			return data.Data;
 		}
 
 		public Task<Crypto> GetCryptoAsync(string id)

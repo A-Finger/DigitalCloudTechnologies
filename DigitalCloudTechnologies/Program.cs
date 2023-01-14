@@ -1,6 +1,9 @@
 using DigitalCloudTechnologies.Data;
+using DigitalCloudTechnologies.Services;
+using DigitalCloudTechnologies.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using MudBlazor.Services;
 
 namespace DigitalCloudTechnologies
 {
@@ -14,6 +17,9 @@ namespace DigitalCloudTechnologies
 			builder.Services.AddRazorPages();
 			builder.Services.AddServerSideBlazor();
 			builder.Services.AddSingleton<WeatherForecastService>();
+			builder.Services.AddHttpClient();
+			builder.Services.AddMudServices();
+			builder.Services.AddScoped<ICryptoSevice, CryptoSevice>();
 
 			var app = builder.Build();
 
@@ -22,7 +28,6 @@ namespace DigitalCloudTechnologies
 			{
 				app.UseExceptionHandler("/Error");
 			}
-
 
 			app.UseStaticFiles();
 

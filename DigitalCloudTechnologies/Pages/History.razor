@@ -1,0 +1,31 @@
+﻿@page "/history"
+@inject ICryptoSevice cs
+
+<MudTable Items="@intradayTrades.Take(10)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+	<HeaderContent>
+		<MudTh>Price USD</MudTh>
+		<MudTh>Circulating Supply</MudTh>
+		<MudTh>Time</MudTh>
+		<MudTh>Date</MudTh>
+	</HeaderContent>
+	<RowTemplate>
+		<MudTd DataLabel="Price">@context.PriceUsd</MudTd>
+		<MudTd DataLabel="Circulating Supply">@context.CirculatingSupply</MudTd>
+		<MudTd DataLabel="Time">@context.Time</MudTd>
+		<MudTd DataLabel="Date">@context.Date</MudTd>
+	</RowTemplate>
+</MudTable>
+
+@code {
+	private string id = "bitcoin";
+	private string interval = "M5"; 
+	private bool _loading = true;
+	private TradingHistory? tradingHistory;
+	private List<IntradayTrade> intradayTrades = new ();
+
+	protected override async Task OnInitializedAsync()
+	{
+		intradayTrades = await cs.GetIntradayTradesAsync(id, interval) as List<IntradayTrade>;
+		_loading = false;
+	}
+}

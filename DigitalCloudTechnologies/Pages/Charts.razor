@@ -1,0 +1,36 @@
+﻿@page "/charts"
+@inject ICryptoSevice cs
+
+@if (chartData is null)
+{
+	<span>Loading...</span>
+}
+else
+{
+	<div>
+		<MudChart ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="500"></MudChart>
+	</div>
+}
+
+@code {
+	private int Index = -1;
+	private string id = "bitcoin";
+	private string interval = "H12";
+	private ChartData chartData;
+	private List<ChartSeries> Series;
+	private string[] XAxisLabels;
+
+	protected override async Task OnInitializedAsync()
+	{
+		chartData = await cs.GetChartsAsync(id, interval);
+		Series = new List<ChartSeries>
+		{
+			new ChartSeries
+			{
+				Name = chartData.Name,
+				Data = chartData.Data.Take(20).ToArray()
+			}
+		};
+		XAxisLabels = chartData.XAxisLabels;
+	}
+}

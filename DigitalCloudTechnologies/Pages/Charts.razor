@@ -1,0 +1,76 @@
+﻿@page "/charts"
+@using DigitalCloudTechnologies.Models.Interfaces;
+@inject ICryptoSevice cs
+
+@if (chartData is null)
+{
+	<span>Loading...</span>
+}
+else
+{
+	@*m1, m5, m15, m30, h1, h2, h6, h12, d1*@
+	<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.False">
+		<MudGrid>
+			<MudItem>
+				<MudSelect T="ICrypto" @bind-Value="Crypto" Class="my-2" Label="Select Crypto" Variant="Variant.Outlined" Margin="Margin.Dense">
+					@foreach (var item in CryptosList)
+					{
+						<MudSelectItem T="ICrypto" Value="item">@item.Symbol</MudSelectItem>
+					}
+				</MudSelect>
+				<MudButtonGroup Size="Size.Small" Variant="Variant.Outlined">
+					@foreach (var inter in buttonIntervals)
+					{
+						<MudButton @onclick="() => TakeInterval(inter)">@inter</MudButton>
+					}
+				</MudButtonGroup>
+
+				<MudChart ChartType="ChartType.Line" ChartSeries="@Series" @bind-SelectedIndex="Index" XAxisLabels="@XAxisLabels" Width="100%" Height="500"></MudChart>
+			</MudItem>
+		</MudGrid>
+	</MudContainer>
+}
+
+@code {
+	private ICrypto _crypto;
+	private int Index = -1;
+	private string id = "bitcoin";
+	private string interval = "H12";
+	private ChartData chartData;
+	private List<ChartSeries> Series;
+	private string[] XAxisLabels;
+	private string[] buttonIntervals = { "M1", "M5", "M15", "M30", "H1", "H2", "H6", "H12", "D1" };
+	private ICrypto Crypto { get; set; }
+	private IEnumerable<ICrypto> CryptosList { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		CryptosList = await cs.GetCryptoList();
+		Crypto = CryptosList.First();
+		await UpdateCharts();
+
+	}
+
+	private async Task UpdateCharts()
+	{
+		await Task.Run(async () =>
+		{
+			chartData = await cs.GetChartsAsync(Crypto.Id, interval);
+			Series = new List<ChartSeries>
+								{
+								new ChartSeries
+								{
+									Name = chartData.Name,
+									Data = chartData.Data.Take(50).ToArray()
+								}
+								};
+			XAxisLabels = chartData.XAxisLabels;
+		});
+	}
+
+	private async Task TakeInterval(string interval)
+	{
+		this.interval = interval;
+		await UpdateCharts();
+	}
+}

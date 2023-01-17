@@ -1,13 +1,8 @@
 ﻿using DigitalCloudTechnologies.Models;
+using DigitalCloudTechnologies.Models.Interfaces;
 using DigitalCloudTechnologies.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DigitalCloudTechnologies.Services
 {
@@ -18,11 +13,6 @@ namespace DigitalCloudTechnologies.Services
 		{
 			httpClient = new HttpClient();
 		}
-		/// <summary>
-		/// Point-in-time interval. Minute and hour intervals represent the price at that 
-		/// time, the day interval represents the average of 24-hour periods (timezone: UTC)
-		/// </summary>
-		public List<string> Interval { get; } = null!;
 
 		public async Task<IEnumerable<Crypto>> GetAllCryptosAsync()
 		{
@@ -38,9 +28,27 @@ namespace DigitalCloudTechnologies.Services
 			return data.Data;
 		}
 
+		public async Task<ChartData> GetChartsAsync(string id, string interval)
+		{
+			string url = $@"https://api.coincap.io/v2/assets/{id.ToLower()}/history?interval={interval.ToLower()}";
+			TradingHistory data = await httpClient.GetFromJsonAsync<TradingHistory>(url);
+			ChartData chartSeries = new ChartData();
+			chartSeries.XAxisLabels = data.Data.Select(x => x.Date.ToShortTimeString()).ToArray();
+			var priceUSD = data.Data.Select(x=> x.PriceUsd).ToArray();
+			chartSeries.Data = Array.ConvertAll(priceUSD, x => (double)x);
+			chartSeries.Name = id.ToUpper();
+
+			return chartSeries;
+		}
+
 		public Task<Crypto> GetCryptoAsync(string id)
 		{
 			throw new NotImplementedException();
+		}
+
+		public async Task<IEnumerable<ICrypto>> GetCryptoList()
+		{
+			return await GetAllCryptosAsync();
 		}
 
 		public async Task<IEnumerable<IntradayTrade>> GetIntradayTradesAsync(string id, string interval)
@@ -51,6 +59,8 @@ namespace DigitalCloudTechnologies.Services
 			return data.Data;
 
 		}
+
+
 
 		public Task<Rate> GetRateAsync(string id)
 		{

@@ -1,4 +1,5 @@
 ﻿using DigitalCloudTechnologies.Models;
+using DigitalCloudTechnologies.Models.Interfaces;
 
 namespace DigitalCloudTechnologies.Services.Interfaces
 {
@@ -10,5 +11,6 @@ namespace DigitalCloudTechnologies.Services.Interfaces
 		public Task<Rate> GetRateAsync(string id);
 		public Task<IEnumerable<IntradayTrade>> GetIntradayTradesAsync(string id, string interval);
 		public Task<ChartData> GetChartsAsync(string id, string interval);
+		public Task<IEnumerable<ICrypto>> GetCryptoList();
 	}
 }

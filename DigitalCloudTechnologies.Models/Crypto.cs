@@ -40,7 +40,7 @@ namespace DigitalCloudTechnologies.Models
 		/// <summary>
 		/// Volume-weighted price based on real-time market data, translated to USD
 		/// </summary>
-		public double? PriceUsd { get; set; }
+		public double PriceUsd { get; set; }
 		/// <summary>
 		/// The direction and value change in the last 24 hours
 		/// </summary>

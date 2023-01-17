@@ -1,4 +1,5 @@
 ﻿using DigitalCloudTechnologies.Models;
+using DigitalCloudTechnologies.Models.Interfaces;
 using DigitalCloudTechnologies.Services.Interfaces;
 using System.Net.Http.Json;
 using System.Security.Cryptography.X509Certificates;
@@ -43,6 +44,11 @@ namespace DigitalCloudTechnologies.Services
 		public Task<Crypto> GetCryptoAsync(string id)
 		{
 			throw new NotImplementedException();
+		}
+
+		public async Task<IEnumerable<ICrypto>> GetCryptoList()
+		{
+			return await GetAllCryptosAsync();
 		}
 
 		public async Task<IEnumerable<IntradayTrade>> GetIntradayTradesAsync(string id, string interval)
